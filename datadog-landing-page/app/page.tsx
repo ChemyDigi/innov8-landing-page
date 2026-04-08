@@ -33,20 +33,20 @@ export default function Home() {
             
             {/* Partner Logos */}
             <div className="w-full flex justify-between items-center mb-10 px-0 md:px-8">
+              {/* Datadog Logo */}
+              <div className="h-10 md:h-12 flex items-center justify-center">
+                <img 
+                  src="/dd_logo_v_white.png" 
+                  alt="Datadog" 
+                  className="max-h-full max-w-[120px] md:max-w-[160px] object-contain drop-shadow-md"
+                />
+              </div>
               {/* INNOV8 Logo */}
               <div className="h-10 md:h-12 flex items-center justify-center">
                 <img 
                   src="/INNOV8%20Logo%20PNG.png" 
                   alt="Innov8" 
                   className="max-h-full max-w-[120px] md:max-w-[160px] object-contain drop-shadow-md brightness-0 invert opacity-90"
-                />
-              </div>
-              {/* Datadog Logo */}
-              <div className="h-10 md:h-12 flex items-center justify-center">
-                <img 
-                  src="/dd_icon_white.png" 
-                  alt="Datadog" 
-                  className="max-h-full max-w-[120px] md:max-w-[160px] object-contain drop-shadow-md"
                 />
               </div>
             </div>
@@ -80,7 +80,7 @@ export default function Home() {
             <span className="absolute -top-8 -left-6 text-7xl text-slate-50 font-serif opacity-50 pointer-events-none select-none">"</span>
             
             <p className="text-xl text-slate-800 mb-8 font-serif italic">Dear [Guest Name],</p>
-            <p className="text-slate-600 leading-loose mb-14 text-lg font-light text-justify md:text-left">
+            <p className="text-slate-600 leading-relaxed md:leading-loose mb-14 text-base md:text-lg font-light text-justify hyphens-auto">
               We are delighted to extend a personal invitation to you for our upcoming Datadog Executive Roundtable. Join Innov8 as we officially introduce and establish enterprise-grade Datadog solutions in Sri Lanka. It would be a pleasure to have you join us for an evening of thoughtful conversation, knowledge sharing, and networking among industry leaders.
             </p>
           </div>
