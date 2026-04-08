@@ -128,12 +128,6 @@ export default function Home() {
               Confirm Attendance
               <ArrowRight className="w-4 h-4 ml-2" />
             </button>
-            <button
-              onClick={() => setIsAgendaOpen(true)}
-              className="px-8 py-3.5 bg-white text-slate-700 border border-slate-200 font-semibold rounded-full shadow-sm hover:bg-slate-50 hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center min-w-[220px]"
-            >
-              View Agenda
-            </button>
           </div>
 
         </div>
