@@ -1,11 +1,45 @@
 "use client";
 
-import React, { useState } from "react";
-import { Clock, MapPin, Calendar, ArrowRight, X } from "lucide-react";
+import React, { useState, Suspense } from "react";
+import { Clock, MapPin, Calendar, ArrowRight, X, Loader2, CheckCircle2 } from "lucide-react";
 import Head from "next/head";
+import { useSearchParams } from "next/navigation";
 
-export default function Home() {
+function EventContent() {
+  const searchParams = useSearchParams();
+  const guestName = searchParams.get("name") || "[Guest Name]";
+  const guestEmail = searchParams.get("email") || "";
+
   const [isAgendaOpen, setIsAgendaOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleConfirm = async () => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("https://formspree.io/f/mwvwzzdq", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: guestName !== "[Guest Name]" ? guestName : "Unknown Guest",
+          email: guestEmail || "No email provided",
+          status: "Confirmed",
+        }),
+      });
+
+      if (response.ok) {
+        setIsSuccess(true);
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      alert("Something went wrong. Please check your connection and try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-slate-200 via-slate-50 to-white text-slate-800 font-sans flex items-center justify-center p-4 sm:p-8 selection:bg-purple-200 selection:text-purple-900">
@@ -79,7 +113,7 @@ export default function Home() {
           <div className="max-w-2xl text-left w-full relative">
             <span className="absolute -top-8 -left-6 text-7xl text-slate-50 font-serif opacity-50 pointer-events-none select-none">"</span>
 
-            <p className="text-xl text-slate-800 mb-8 font-serif italic">Dear [Guest Name],</p>
+            <p className="text-xl text-slate-800 mb-8 font-serif italic">Dear {guestName},</p>
             <p className="text-slate-600 leading-relaxed md:leading-loose mb-14 text-base md:text-lg font-light text-justify hyphens-auto">
               We are delighted to extend a personal invitation to you for our upcoming Datadog Executive Roundtable. Join Innov8 as we officially introduce and establish enterprise-grade Datadog solutions in Sri Lanka. It would be a pleasure to have you join us for an evening of thoughtful conversation, knowledge sharing, and networking among industry leaders.
             </p>
@@ -124,9 +158,31 @@ export default function Home() {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center">
-            <button className="px-8 py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-full shadow-lg hover:shadow-purple-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center min-w-[220px]">
-              Confirm Attendance
-              <ArrowRight className="w-4 h-4 ml-2" />
+            <button 
+              onClick={handleConfirm}
+              disabled={isSubmitting || isSuccess}
+              className={`px-8 py-3.5 bg-gradient-to-r text-white font-semibold rounded-full shadow-lg transition-all duration-300 flex items-center justify-center min-w-[220px] ${
+                isSuccess 
+                  ? "from-emerald-500 to-teal-500 hover:shadow-emerald-500/30 cursor-default" 
+                  : "from-purple-600 to-indigo-600 hover:shadow-purple-500/30 hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
+              }`}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Confirming...
+                </>
+              ) : isSuccess ? (
+                <>
+                  <CheckCircle2 className="w-5 h-5 mr-2" />
+                  Confirmed!
+                </>
+              ) : (
+                <>
+                  Confirm Attendance
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
             </button>
           </div>
 
@@ -248,5 +304,17 @@ export default function Home() {
       </div>
 
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-slate-200 via-slate-50 to-white flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <EventContent />
+    </Suspense>
   );
 }
