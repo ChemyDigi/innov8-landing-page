@@ -92,9 +92,13 @@ function EventContent() {
             A PERSONAL INVITATION
           </div>
 
+          <div className="mb-6 sm:mb-8 w-full text-center">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-[#00c3ff] text-4xl sm:text-5xl md:text-6xl font-black tracking-wider drop-shadow-[0_0_15px_rgba(0,195,255,0.3)]">
+              {guestName}
+            </span>
+          </div>
+
           <p className="text-gray-300 text-justify hyphens-auto text-xs sm:text-sm md:text-base tracking-wide max-w-3xl mb-12 sm:mb-16 leading-relaxed font-light">
-            Dear {guestName},
-            <br/><br/>
             We are delighted to extend a personal invitation to you for our upcoming Datadog Executive Roundtable. Join Innov8 as we officially introduce and establish enterprise-grade Datadog solutions in Sri Lanka. It would be a pleasure to have you join us for an evening of thoughtful conversation, knowledge sharing, and networking among industry leaders.
           </p>
 
