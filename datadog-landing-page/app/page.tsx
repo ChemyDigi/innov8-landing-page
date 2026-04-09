@@ -1,252 +1,199 @@
 "use client";
 
-import React, { useState } from "react";
-import { Clock, MapPin, Calendar, ArrowRight, X } from "lucide-react";
-import Head from "next/head";
+import React, { useState, Suspense } from "react";
+import { Clock, MapPin, Calendar, ArrowRight, X, Loader2, CheckCircle2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
-export default function Home() {
+function EventContent() {
+  const searchParams = useSearchParams();
+  const guestName = searchParams.get("name") || "[Guest Name]";
+  const guestEmail = searchParams.get("email") || "";
+
   const [isAgendaOpen, setIsAgendaOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleConfirm = async () => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("https://formspree.io/f/mwvwzzdq", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: guestName !== "[Guest Name]" ? guestName : "Unknown Guest",
+          email: guestEmail || "No email provided",
+          status: "Confirmed",
+        }),
+      });
+
+      if (response.ok) {
+        setIsSuccess(true);
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      alert("Something went wrong. Please check your connection and try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-slate-200 via-slate-50 to-white text-slate-800 font-sans flex items-center justify-center p-4 sm:p-8 selection:bg-purple-200 selection:text-purple-900">
-
-      {/* Decorative ambient background behind the card */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-purple-200/20 blur-[120px]"></div>
-        <div className="absolute top-[60%] -right-[10%] w-[40%] h-[60%] rounded-full bg-indigo-100/40 blur-[120px]"></div>
+    <div className="min-h-screen bg-[#070514] text-white font-sans flex flex-col items-center justify-center relative overflow-x-hidden selection:bg-pink-500/30 p-4 sm:p-8">
+      {/* Dynamic Background Gradients */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-purple-600/30 blur-[150px]"></div>
+        <div className="absolute bottom-[10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/20 blur-[120px]"></div>
+        <div className="absolute top-[40%] right-[10%] w-[30%] h-[30%] rounded-full bg-pink-600/20 blur-[150px]"></div>
       </div>
 
-      <main className="w-full max-w-4xl bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] rounded-2xl overflow-hidden border border-white/60 relative z-10 backdrop-blur-sm">
+      {/* Placeholders for 3D Pngs (To be replaced by user's images) */}
+      <img src="/tube-top-right.png" alt="" className="fixed top-[10%] right-[2%] w-64 opacity-80 pointer-events-none hidden lg:block z-10 drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]" />
+      <img src="/tube-bottom-left.png" alt="" className="fixed bottom-[5%] left-[-2%] w-80 opacity-80 pointer-events-none hidden lg:block z-10 drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]" />
+      <img src="/sphere-left.png" alt="" className="fixed top-[40%] left-[5%] w-24 opacity-80 pointer-events-none hidden lg:block z-10 drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]" />
+      <img src="/ring-bottom-right.png" alt="" className="fixed bottom-[-5%] right-[5%] w-96 opacity-80 pointer-events-none hidden lg:block z-10 drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]" />
 
-        {/* Top Dark Section */}
-        <div className="bg-slate-950 p-10 md:p-16 text-center relative overflow-hidden group">
+      {/* Decorative Dots outside the card */}
+      <div className="absolute top-[25%] left-[10%] w-1.5 h-1.5 bg-white rotate-45 opacity-40"></div>
+      <div className="absolute top-[60%] right-[15%] w-1.5 h-1.5 bg-white rotate-45 opacity-40"></div>
+      <div className="absolute bottom-[20%] left-[15%] w-1.5 h-1.5 bg-white rotate-45 opacity-40"></div>
 
-          {/* Dynamic Premium Gradients */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute top-[-50%] left-[20%] w-[60%] h-[200%] bg-purple-600/20 blur-[100px] rounded-full mix-blend-screen transition-transform duration-1000 group-hover:scale-110"></div>
-            <div className="absolute bottom-[-50%] right-[-20%] w-[50%] h-[150%] bg-indigo-500/20 blur-[90px] rounded-full mix-blend-screen transition-transform duration-1000 group-hover:-translate-x-10"></div>
-            {/* Very subtle noise texture overlay */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:24px_24px] opacity-20"></div>
+      {/* INVITATION CARD CONTAINER */}
+      <div className="relative z-20 w-full max-w-4xl bg-[#100c2e]/70 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-[0_30px_80px_rgba(0,0,0,0.8),_inset_0_0_80px_rgba(233,0,116,0.03)] p-8 sm:p-12 md:p-16 flex flex-col items-center overflow-hidden my-6 sm:my-12">
+        
+        {/* Inner Card Subtle Glows */}
+        <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-pink-500/10 blur-[80px] pointer-events-none"></div>
+        <div className="absolute bottom-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-cyan-500/10 blur-[80px] pointer-events-none"></div>
+
+        {/* Top Header Section inside card */}
+        <header className="w-full flex justify-between items-center z-30 mb-12 sm:mb-16">
+          <img src="/dd_logo_v_white.png" alt="Datadog" className="h-10 sm:h-14 lg:h-20 object-contain drop-shadow-md" />
+          <img src="/INNOV8%20Logo%20PNG.png" alt="Innov8" className="h-5 sm:h-7 lg:h-9 object-contain brightness-0 invert opacity-90 drop-shadow-md" />
+        </header>
+
+        {/* Main Content inside card */}
+        <main className="w-full relative z-30 flex flex-col items-center text-center">
+          
+          <div className="bg-[#e90074] text-white px-5 py-1.5 text-[10px] sm:text-xs font-black tracking-[0.2em] uppercase mb-8 sm:mb-10 shadow-[0_0_15px_rgba(233,0,116,0.3)]">
+            You Are Invited
           </div>
 
-          <div className="relative z-10 flex flex-col items-center">
+          <h1 className="text-3xl sm:text-5xl md:text-[4rem] font-sans font-bold text-white mb-8 sm:mb-10 leading-[1.1] tracking-wider uppercase w-full">
+            Datadog Executive<br/>Roundtable
+          </h1>
 
-            {/* Partner Logos */}
-            <div className="w-full flex justify-between items-center mb-10 px-0 md:px-8">
-              {/* Datadog Logo */}
-              <div className="h-10 md:h-12 flex items-center justify-center">
-                <img
-                  src="/dd_logo_v_white.png"
-                  alt="Datadog"
-                  className="max-h-full max-w-[120px] md:max-w-[160px] object-contain drop-shadow-md"
-                />
-              </div>
-              {/* INNOV8 Logo */}
-              <div className="h-10 md:h-12 flex items-center justify-center">
-                <img
-                  src="/INNOV8%20Logo%20PNG.png"
-                  alt="Innov8"
-                  className="max-h-full max-w-[120px] md:max-w-[160px] object-contain drop-shadow-md brightness-0 invert opacity-90"
-                />
-              </div>
-            </div>
+          <p className="text-cyan-300 text-[10px] sm:text-xs md:text-sm tracking-[0.15em] md:tracking-[0.2em] uppercase max-w-2xl mb-12 sm:mb-14 leading-relaxed font-semibold">
+            Observability, Security & AI for Modern Enterprises
+          </p>
 
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md">
-              <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse"></span>
-              <h2 className="bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-indigo-300 uppercase tracking-[0.35em] text-[10px] font-bold">
-                You Are Invited
-              </h2>
-            </div>
-
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-white mb-6 leading-[1.1] tracking-tight drop-shadow-lg">
-              Datadog Executive<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-br from-white via-slate-200 to-slate-400">
-                Roundtable
-              </span>
-            </h1>
-            <p className="text-slate-400 font-light text-lg md:text-xl tracking-wide max-w-xl mx-auto mb-4">
-              Observability, Security & AI for Modern Enterprises
-            </p>
-          </div>
-        </div>
-
-        {/* Separator Gradient Line */}
-        <div className="h-1 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-90"></div>
-
-        {/* Bottom White Section */}
-        <div className="p-10 md:p-16 lg:p-20 bg-white flex flex-col items-center relative">
-
-          <div className="max-w-2xl text-left w-full relative">
-            <span className="absolute -top-8 -left-6 text-7xl text-slate-50 font-serif opacity-50 pointer-events-none select-none">"</span>
-
-            <p className="text-xl text-slate-800 mb-8 font-serif italic">Dear [Guest Name],</p>
-            <p className="text-slate-600 leading-relaxed md:leading-loose mb-14 text-base md:text-lg font-light text-justify hyphens-auto">
-              We are delighted to extend a personal invitation to you for our upcoming Datadog Executive Roundtable. Join Innov8 as we officially introduce and establish enterprise-grade Datadog solutions in Sri Lanka. It would be a pleasure to have you join us for an evening of thoughtful conversation, knowledge sharing, and networking among industry leaders.
-            </p>
+          <div className="text-[#00c3ff] font-bold text-[9px] sm:text-[11px] md:text-xs tracking-[0.2em] uppercase mb-6 sm:mb-8 pb-2">
+            A PERSONAL INVITATION
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-3xl mb-14">
-            {/* Date Box */}
-            <div className="group relative bg-white border border-slate-200/60 rounded-2xl p-8 text-center flex flex-col items-center shadow-sm hover:shadow-xl hover:border-purple-300/50 transition-all duration-500 hover:-translate-y-1">
-              <div className="absolute inset-0 bg-gradient-to-b from-purple-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none"></div>
-              <div className="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-purple-100 transition-all duration-500">
-                <Calendar className="w-6 h-6 text-purple-600" strokeWidth={1.5} />
-              </div>
-              <h3 className="text-[11px] uppercase tracking-[0.25em] text-slate-400 mb-2 font-bold">Date</h3>
-              <p className="text-slate-800 font-medium font-serif text-lg md:text-xl">April 29</p>
-              <p className="text-slate-500 text-sm mt-1">2026</p>
-            </div>
+          <p className="text-gray-300 text-justify hyphens-auto text-xs sm:text-sm md:text-base tracking-wide max-w-3xl mb-12 sm:mb-16 leading-relaxed font-light">
+            Dear {guestName},
+            <br/><br/>
+            We are delighted to extend a personal invitation to you for our upcoming Datadog Executive Roundtable. Join Innov8 as we officially introduce and establish enterprise-grade Datadog solutions in Sri Lanka. It would be a pleasure to have you join us for an evening of thoughtful conversation, knowledge sharing, and networking among industry leaders.
+          </p>
 
-            {/* Time Box */}
-            <div className="group relative bg-white border border-slate-200/60 rounded-2xl p-8 text-center flex flex-col items-center shadow-sm hover:shadow-xl hover:border-purple-300/50 transition-all duration-500 hover:-translate-y-1">
-              <div className="absolute inset-0 bg-gradient-to-b from-purple-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none"></div>
-              <div className="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-purple-100 transition-all duration-500">
-                <Clock className="w-6 h-6 text-purple-600" strokeWidth={1.5} />
-              </div>
-              <h3 className="text-[11px] uppercase tracking-[0.25em] text-slate-400 mb-2 font-bold">Time</h3>
-              <p className="text-slate-800 font-medium font-serif text-lg md:text-xl whitespace-nowrap">
-                5:30 PM
-              </p>
-              <p className="text-slate-500 text-sm mt-1">onwards</p>
+          <div className="flex flex-col sm:flex-row gap-10 sm:gap-12 md:gap-20 items-center justify-center text-center mb-12 sm:mb-16 w-full">
+            <div className="flex flex-col items-center group">
+              <Calendar className="w-6 h-6 text-[#e90074] mb-3 group-hover:scale-110 transition-transform" />
+              <div className="text-white text-[10px] sm:text-xs md:text-sm font-black tracking-widest uppercase mb-1 sm:mb-2">DATE</div>
+              <div className="text-gray-400 text-[9px] sm:text-[10px] md:text-xs tracking-wider uppercase">APRIL 29, 2026</div>
             </div>
-
-            {/* Venue Box */}
-            <div className="group relative bg-white border border-slate-200/60 rounded-2xl p-8 text-center flex flex-col items-center shadow-sm hover:shadow-xl hover:border-purple-300/50 transition-all duration-500 hover:-translate-y-1">
-              <div className="absolute inset-0 bg-gradient-to-b from-purple-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none"></div>
-              <div className="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-purple-100 transition-all duration-500">
-                <MapPin className="w-6 h-6 text-purple-600" strokeWidth={1.5} />
-              </div>
-              <h3 className="text-[11px] uppercase tracking-[0.25em] text-slate-400 mb-2 font-bold">Venue</h3>
-              <p className="text-slate-800 font-medium font-serif text-lg md:text-xl leading-tight">Celestine</p>
-              <p className="text-slate-500 text-sm mt-1">Cinnamon Life</p>
+            <div className="hidden sm:block w-px h-12 bg-white/10"></div>
+            <div className="flex flex-col items-center group">
+              <Clock className="w-6 h-6 text-[#e90074] mb-3 group-hover:scale-110 transition-transform" />
+              <div className="text-white text-[10px] sm:text-xs md:text-sm font-black tracking-widest uppercase mb-1 sm:mb-2">TIME</div>
+              <div className="text-gray-400 text-[9px] sm:text-[10px] md:text-xs tracking-wider uppercase">5:30 PM ONWARDS</div>
+            </div>
+            <div className="hidden sm:block w-px h-12 bg-white/10"></div>
+            <div className="flex flex-col items-center group">
+              <MapPin className="w-6 h-6 text-[#e90074] mb-3 group-hover:scale-110 transition-transform" />
+              <div className="text-white text-[10px] sm:text-xs md:text-sm font-black tracking-widest uppercase mb-1 sm:mb-2">VENUE</div>
+              <div className="text-gray-400 text-[9px] sm:text-[10px] md:text-xs tracking-wider uppercase">CELESTINE, CINNAMON LIFE</div>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center">
-            <button className="px-8 py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-full shadow-lg hover:shadow-purple-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center min-w-[220px]">
-              Confirm Attendance
-              <ArrowRight className="w-4 h-4 ml-2" />
+          <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10 mt-4 w-full justify-center">
+            <button 
+              onClick={handleConfirm}
+              disabled={isSubmitting || isSuccess}
+              className={`px-8 py-3.5 sm:px-10 sm:py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(0,195,255,0.3)] hover:shadow-[0_0_30px_rgba(0,195,255,0.5)] ${
+                isSuccess 
+                  ? "bg-emerald-500 text-white cursor-default shadow-none" 
+                  : "bg-[#00c3ff] hover:bg-[#00a0d6] text-white disabled:opacity-70 disabled:cursor-not-allowed hover:-translate-y-1"
+              }`}
+            >
+              {isSubmitting ? "CONFIRMING..." : isSuccess ? "CONFIRMED!" : "CONFIRM ATTENDANCE"}
+            </button>
+
+            <button 
+              onClick={() => setIsAgendaOpen(true)}
+              className="text-white text-[9px] sm:text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase hover:text-[#e90074] transition-colors pb-1 border-b border-transparent hover:border-[#e90074]"
+            >
+              VIEW EVENT AGENDA
             </button>
           </div>
+        </main>
+      </div>
 
-        </div>
-      </main>
-
-      {/* Agenda Modal overlay */}
-      <div
-        className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ${isAgendaOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
-          }`}
-      >
-        {/* Backdrop */}
-        <div
-          className={`absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300 ${isAgendaOpen ? "opacity-100" : "opacity-0"
-            }`}
-          onClick={() => setIsAgendaOpen(false)}
-        ></div>
-
-        {/* Modal Window */}
-        <div className={`bg-white rounded-2xl shadow-2xl w-full max-w-2xl relative z-10 overflow-hidden flex flex-col max-h-[85vh] transition-all duration-300 transform ${isAgendaOpen ? "scale-100 translate-y-0" : "scale-95 translate-y-8"
-          }`}>
-          {/* Header */}
-          <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-            <h3 className="text-2xl font-serif text-slate-800">Event Agenda</h3>
-            <button
-              onClick={() => setIsAgendaOpen(false)}
-              className="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-colors"
-            >
+      {/* Agenda Modal */}
+      <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ${isAgendaOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}`}>
+        <div className={`absolute inset-0 bg-[#070514]/90 backdrop-blur-md transition-opacity duration-300 ${isAgendaOpen ? "opacity-100" : "opacity-0"}`} onClick={() => setIsAgendaOpen(false)}></div>
+        
+        <div className={`bg-[#141032] border border-[#e90074]/30 rounded-xl shadow-[0_0_40px_rgba(233,0,116,0.15)] w-full max-w-2xl relative z-10 overflow-hidden flex flex-col max-h-[85vh] transition-all duration-300 transform ${isAgendaOpen ? "scale-100 translate-y-0" : "scale-95 translate-y-8"}`}>
+          <div className="p-6 border-b border-white/5 flex justify-between items-center bg-[#0d0a25]">
+            <h3 className="text-lg font-bold tracking-widest uppercase text-white">Event Agenda</h3>
+            <button onClick={() => setIsAgendaOpen(false)} className="p-2 text-gray-400 hover:text-[#e90074] transition-colors">
               <X className="w-5 h-5" />
             </button>
           </div>
-
-          {/* Content Body */}
-          <div className="p-6 md:p-10 overflow-y-auto bg-slate-50/30">
+          
+          <div className="p-6 md:p-10 overflow-y-auto">
             <div className="relative max-w-2xl mx-auto px-2">
-              {/* Vertical line connecting the timeline dots */}
-              <div className="absolute left-[19px] sm:left-[140px] top-3 bottom-5 w-px bg-gradient-to-b from-purple-200 via-purple-100 to-transparent"></div>
-
-              <div className="space-y-5">
-
-                {/* Item 1 */}
-                <div className="relative flex flex-col sm:flex-row gap-3 sm:gap-8 group">
-                  <div className="absolute left-[19px] sm:left-[140px] top-3.5 w-2.5 h-2.5 bg-purple-500 rounded-full transform -translate-x-1/2 ring-4 ring-white group-hover:bg-purple-600 group-hover:scale-125 transition-all duration-300 shadow-sm"></div>
-
-                  <div className="pl-10 sm:pl-0 sm:w-[124px] flex-shrink-0 sm:text-right sm:pr-2 pt-1.5">
-                    <div className="text-purple-600 font-semibold text-sm">5:30 - 6:30 PM</div>
-                    <div className="text-slate-400 text-[11px] uppercase tracking-wider font-semibold mt-1">60 mins</div>
+              <div className="absolute left-[19px] sm:left-[140px] top-3 bottom-5 w-px bg-gradient-to-b from-[#e90074] to-transparent"></div>
+              
+              <div className="space-y-8">
+                {[
+                  { time: "5:30 - 6:30 PM", duration: "60 MINS", title: "Registration and welcome", sub: "Ice Breaker" },
+                  { time: "6:30 - 6:35 PM", duration: "5 MINS", title: "Innov8 Welcome Address" },
+                  { time: "6:35 - 7:00 PM", duration: "25 MINS", title: "Datadog Welcome Address" },
+                  { time: "7:00 - 7:50 PM", duration: "50 MINS", title: "Building Unified Visibility Without Tool Sprawl" },
+                  { time: "8:30 PM onwards", duration: "90 MINS", title: "Dinner and Drinks" },
+                ].map((item, idx) => (
+                  <div key={idx} className="relative flex flex-col sm:flex-row gap-4 sm:gap-8 group">
+                    <div className="absolute left-[19px] sm:left-[140px] top-3.5 w-2 h-2 bg-[#00c3ff] rounded-full transform -translate-x-1/2 group-hover:scale-150 group-hover:bg-[#e90074] transition-all duration-300 shadow-[0_0_8px_#00c3ff]"></div>
+                    <div className="pl-10 sm:pl-0 sm:w-[124px] flex-shrink-0 sm:text-right sm:pr-2 pt-1.5">
+                      <div className="text-[#00c3ff] font-bold text-xs tracking-widest uppercase">{item.time}</div>
+                      <div className="text-gray-500 text-[10px] tracking-widest mt-1.5">{item.duration}</div>
+                    </div>
+                    <div className="ml-10 sm:ml-0 flex-1 bg-[#1a153f] border border-white/5 group-hover:border-[#e90074]/30 rounded-lg p-5 transition-all duration-300">
+                      <h4 className="text-white font-bold text-sm tracking-wider uppercase">{item.title}</h4>
+                      {item.sub && <p className="text-[#e90074] text-xs mt-2 font-bold tracking-widest uppercase">{item.sub}</p>}
+                    </div>
                   </div>
-
-                  <div className="ml-10 sm:ml-0 flex-1 bg-white border border-slate-100 hover:border-purple-200 rounded-xl p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.1)] transition-all duration-300">
-                    <h4 className="text-slate-800 font-semibold text-[15px]">Registration and welcome</h4>
-                    <p className="text-slate-500 text-sm mt-2 flex items-center gap-2">
-                      <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                      Ice Breaker
-                    </p>
-                  </div>
-                </div>
-
-                {/* Item 2 */}
-                <div className="relative flex flex-col sm:flex-row gap-3 sm:gap-8 group">
-                  <div className="absolute left-[19px] sm:left-[140px] top-3.5 w-2.5 h-2.5 bg-purple-500 rounded-full transform -translate-x-1/2 ring-4 ring-white group-hover:bg-purple-600 group-hover:scale-125 transition-all duration-300 shadow-sm"></div>
-
-                  <div className="pl-10 sm:pl-0 sm:w-[124px] flex-shrink-0 sm:text-right sm:pr-2 pt-1.5">
-                    <div className="text-purple-600 font-semibold text-sm">6:30 - 6:35 PM</div>
-                    <div className="text-slate-400 text-[11px] uppercase tracking-wider font-semibold mt-1">5 mins</div>
-                  </div>
-
-                  <div className="ml-10 sm:ml-0 flex-1 bg-white border border-slate-100 hover:border-purple-200 rounded-xl p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.1)] transition-all duration-300">
-                    <h4 className="text-slate-800 font-semibold text-[15px]">Innov8 Welcome Address</h4>
-                  </div>
-                </div>
-
-                {/* Item 3 */}
-                <div className="relative flex flex-col sm:flex-row gap-3 sm:gap-8 group">
-                  <div className="absolute left-[19px] sm:left-[140px] top-3.5 w-2.5 h-2.5 bg-purple-500 rounded-full transform -translate-x-1/2 ring-4 ring-white group-hover:bg-purple-600 group-hover:scale-125 transition-all duration-300 shadow-sm"></div>
-
-                  <div className="pl-10 sm:pl-0 sm:w-[124px] flex-shrink-0 sm:text-right sm:pr-2 pt-1.5">
-                    <div className="text-purple-600 font-semibold text-sm">6:35 - 7:00 PM</div>
-                    <div className="text-slate-400 text-[11px] uppercase tracking-wider font-semibold mt-1">25 mins</div>
-                  </div>
-
-                  <div className="ml-10 sm:ml-0 flex-1 bg-white border border-slate-100 hover:border-purple-200 rounded-xl p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.1)] transition-all duration-300">
-                    <h4 className="text-slate-800 font-semibold text-[15px]">Datadog Welcome Address</h4>
-                  </div>
-                </div>
-
-                {/* Item 4 */}
-                <div className="relative flex flex-col sm:flex-row gap-3 sm:gap-8 group">
-                  <div className="absolute left-[19px] sm:left-[140px] top-3.5 w-2.5 h-2.5 bg-purple-500 rounded-full transform -translate-x-1/2 ring-4 ring-white group-hover:bg-purple-600 group-hover:scale-125 transition-all duration-300 shadow-sm"></div>
-
-                  <div className="pl-10 sm:pl-0 sm:w-[124px] flex-shrink-0 sm:text-right sm:pr-2 pt-1.5">
-                    <div className="text-purple-600 font-semibold text-sm">7:00 - 7:50 PM</div>
-                    <div className="text-slate-400 text-[11px] uppercase tracking-wider font-semibold mt-1">50 mins</div>
-                  </div>
-
-                  <div className="ml-10 sm:ml-0 flex-1 bg-white border border-slate-100 hover:border-purple-200 rounded-xl p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.1)] transition-all duration-300">
-                    <h4 className="text-slate-800 font-semibold text-[15px] leading-snug">Building Unified Visibility Without Tool Sprawl</h4>
-                  </div>
-                </div>
-
-                {/* Item 5 */}
-                <div className="relative flex flex-col sm:flex-row gap-3 sm:gap-8 group">
-                  <div className="absolute left-[19px] sm:left-[140px] top-3.5 w-2.5 h-2.5 bg-purple-500 rounded-full transform -translate-x-1/2 ring-4 ring-white group-hover:bg-purple-600 group-hover:scale-125 transition-all duration-300 shadow-sm"></div>
-
-                  <div className="pl-10 sm:pl-0 sm:w-[124px] flex-shrink-0 sm:text-right sm:pr-2 pt-1.5">
-                    <div className="text-purple-600 font-semibold text-sm">8:30 PM onwards</div>
-                    <div className="text-slate-400 text-[11px] uppercase tracking-wider font-semibold mt-1">90 mins</div>
-                  </div>
-
-                  <div className="ml-10 sm:ml-0 flex-1 bg-white border border-slate-100 hover:border-purple-200 rounded-xl p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.1)] transition-all duration-300">
-                    <h4 className="text-slate-800 font-semibold text-[15px]">Dinner and Drinks</h4>
-                  </div>
-                </div>
-
+                ))}
               </div>
             </div>
           </div>
         </div>
       </div>
-
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#070514] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[#e90074] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <EventContent />
+    </Suspense>
   );
 }
