@@ -16,10 +16,11 @@ function EventContent() {
   const handleConfirm = async () => {
     setIsSubmitting(true);
     try {
-      const response = await fetch("https://formspree.io/f/mwvwzzdq", {
+      await fetch("https://script.google.com/macros/s/AKfycbzch7OAF2Lh1QdvpBop6ftdJgA7Bzhb9A5ly7LmCMxfKhou5gvMjQBussGgNe6L8Fms/exec", {
         method: "POST",
+        mode: "no-cors", // Required to avoid CORS errors with Google Apps Script redirects
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "text/plain", // Avoids CORS preflight request
         },
         body: JSON.stringify({
           name: guestName !== "[Guest Name]" ? guestName : "Unknown Guest",
@@ -28,11 +29,8 @@ function EventContent() {
         }),
       });
 
-      if (response.ok) {
-        setIsSuccess(true);
-      } else {
-        alert("Something went wrong. Please try again.");
-      }
+      // With no-cors, fetch resolves on success but response is opaque
+      setIsSuccess(true);
     } catch (error) {
       alert("Something went wrong. Please check your connection and try again.");
     } finally {
