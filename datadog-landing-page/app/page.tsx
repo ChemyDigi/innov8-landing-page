@@ -98,9 +98,14 @@ function EventContent() {
             </span>
           </div>
 
-          <p className="text-gray-300 text-justify hyphens-auto text-xs sm:text-sm md:text-base tracking-wide max-w-3xl mb-12 sm:mb-16 leading-relaxed font-light">
-            We are delighted to extend a personal invitation to you for our upcoming Datadog Executive Roundtable. Join Innov8 as we officially introduce and establish enterprise-grade Datadog solutions in Sri Lanka. It would be a pleasure to have you join us for an evening of thoughtful conversation, knowledge sharing, and networking among industry leaders.
-          </p>
+          <div className="text-gray-300 text-justify hyphens-auto text-xs sm:text-sm md:text-base tracking-wide max-w-3xl mb-12 sm:mb-16 leading-relaxed font-light space-y-4">
+            <p>
+              We are pleased to personally invite you to the upcoming executive roundtable. This session, hosted by Innov8 and Datadog, seeks to reframed observability as a strategic business capability not just a tooling decision. During the roundtable, we will explore how organizations are leveraging Datadog to enhance ROI through better cost visibility, strengthen risk management with proactive threat detection, and accelerate transformation through improved cross-team collaboration and AI-driven insights.
+            </p>
+            <p>
+              We would be honored by your presence for an evening of insightful dialogue, peer exchange, and meaningful networking with fellow industry leaders.
+            </p>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-10 sm:gap-12 md:gap-20 items-center justify-center text-center mb-12 sm:mb-16 w-full">
             <div className="flex flex-col items-center group">
